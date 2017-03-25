@@ -8,8 +8,9 @@ COPY . /usr/app
 RUN yum install epel-release -y && \
     yum install python-setuptools -y && \
     easy_install pip && \
-    pip install -r /usr/app/requirements.txt
+    pip install -r /usr/app/requirements.txt && \
+    mkdir db 
 
-WORKDIR "/usr/app"
+WORKDIR "/usr/app/db"
 ENTRYPOINT ["python"]
 CMD ["/usr/app/main.py"]
