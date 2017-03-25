@@ -22,7 +22,7 @@ def getTracker(bot, logger):
         @staticmethod
         @bot.message_handler(commands=['start'])
         def send_welcome(message):
-            logger.info(message.chat.id + " is start")
+            logger.info(str(message.chat.id) + " is start")
             bot.reply_to(message, "Hi")
 
         @staticmethod
