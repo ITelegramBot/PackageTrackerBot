@@ -10,6 +10,6 @@ RUN yum install epel-release -y && \
     easy_install pip && \
     pip install -r /usr/app/requirements.txt
 
-WORKDIR ["/usr/app"]
+WORKDIR "/usr/app"
 ENTRYPOINT ["python"]
 CMD ["/usr/app/main.py"]
