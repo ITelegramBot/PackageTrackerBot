@@ -101,12 +101,13 @@ def getTracker(bot, logger):
 
             logger.info("Fetched a package: " + packageID)
             info = api.TrackerApi.getPackageInformation(packageID)
-            messages = ""
+            messages = "\nPackage Status: " + api.getStatusFromCode(info["status"])
             if info["data"]:
                 for item in info["data"]:
-                    message += "\n" + item["data"] + " - " + item["time"]
-                bot.send_message(message.chat.id, "Fetched Package: " + packageID + messages)
+                    messages += ("\n" + item["data"] + " - " + item["time"])
             else:
                 bot.send_message(message.chat.id, "Error: Package not found")
+                return
+            bot.send_message(message.chat.id, "Fetched Package: " + packageID + messages)
             
     return PackagerTracker
