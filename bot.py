@@ -89,4 +89,24 @@ def getTracker(bot, logger):
             logger.info("Removed a package: " + packageID)
 
             bot.send_message(message.chat.id, "Removed package: " + packageID)
+
+        @staticmethod
+        @bot.message_handler(commands=['fetch'])
+        def fetch_package(message):
+            if len(str(message.text).split(" ")[1:]) == 0:
+                bot.send_message(message.chat.id, "Error: Please input a PackageId")
+                return
+
+            packageID = str(escape(str(message.text).split(" ")[1]))
+
+            logger.info("Fetched a package: " + packageID)
+            info = api.TrackerApi.getPackageInformation(packageID)
+            messages = ""
+            if info["data"]:
+                for item in info["data"]:
+                    message += "\n" + item["data"] + " - " + item["time"]
+                bot.send_message(message.chat.id, "Fetched Package: " + packageID + messages)
+            else:
+                bot.send_message(message.chat.id, "Error: Package not found")
+            
     return PackagerTracker
