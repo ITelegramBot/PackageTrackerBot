@@ -36,9 +36,9 @@ class TrackerApi(object):
                 "status": 0,
                 "data": []
             }
-      #  print req.json()
+        # print req.json()
         code = int(req.json()["state"])
-        print code
+        # print code
         if code in [1, 5, 0]:
             statusCode = 1
         elif code == 3:
