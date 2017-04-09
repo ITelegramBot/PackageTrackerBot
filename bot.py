@@ -1,8 +1,12 @@
+# -*- coding: utf-8 -*-
 from markupsafe import Markup, escape
 import telebot
 import api
+import sys
 import db
 
+reload(sys)
+sys.setdefaultencoding('utf8')
 DATABASE = db.getDb("bot.db")
 
 
@@ -28,17 +32,17 @@ def getTracker(bot, logger):
         @staticmethod
         @bot.message_handler(commands=['new'])
         def create_query(message):
-            if len(str(message.text).split(" ")[1:]) == 0:
-                bot.send_message(message.chat.id, "Error: Please input a PackageId")
+            if len(str(str(message.text).encode("utf-8")).split(" ")[1:]) == 0:
+                bot.send_message(message.chat.id, u"错误: 请输入单号")
                 return
 
             packageID = str(escape(str(message.text).split(" ")[1]))
             packageProvider = ""
-            packageName = "Package %s" % str(packageID)[:4]
+            packageName = u"包裹 %s" % str(packageID)[:4]
             packageStatus = 0
 
             if len(str(message.text).split(" ")[1:]) >= 2:
-                packageName = str(escape(str(message.text).split(" ")[2]))
+                packageName = str(escape(str(message.text).encode("utf-8").split(" ")[2]))
 
             if len(str(message.text).split(" ")[1:]) == 3:
                 packageProvider = str(escape(str(message.text).split(" ")[3]))
@@ -46,8 +50,8 @@ def getTracker(bot, logger):
             try:
                 packageProvider = api.TrackerApi.getPackageProvider(packageID)
             except ValueError:
-                if packageProvider == "":
-                    bot.send_message(message.chat.id, "Error: Package not found, please check or add force.")
+                if packageProvider == "" or ():
+                    bot.send_message(message.chat.id, u"错误: 包裹未找到, 请检查或者强制添加.")
                     return
 
             lastDate = ""
@@ -58,56 +62,66 @@ def getTracker(bot, logger):
                     packageStatus = data["status"]
             except ValueError:
                 pass
+
+            if int(packageStatus) == 0 and packageProvider == "":
+                bot.send_message(message.chat.id, u"错误: 包裹未找到, 请检查或者强制添加.")
+                return
+
             try:
                 DATABASE.newPackage(message.chat.id, packageID, packageProvider, lastDate, packageName, packageStatus)
             except ValueError:
-                bot.send_message(message.chat.id, "Can't add same package!")
+                bot.send_message(message.chat.id, u"请不要添加相同的快递!")
                 return
+            try:
+                api.getProvider(packageProvider)
+            except KeyError:
+                packageProvider = api.getProviderFromString(packageProvider)
             logger.info("Starting a new package: " + packageID)
-            bot.send_message(message.chat.id, "Your package \'%s[%s]\' is saved" % (packageName, packageProvider))
+            bot.send_message(message.chat.id, u"你的快递 \'%s[%s]\' 已被保存" % (packageName,
+                                                                         api.getProvider(packageProvider)))
 
         @staticmethod
         @bot.message_handler(commands=['list'])
         def list_package(message):
             messages = ""
             for package in DATABASE.getUserAll(message.chat.id):
-                messages += "\n" + package[5] + " - " + package[0] + " - " + api.getStatusFromCode(package[1]) +\
+                messages += "\n" + package[5] + " - " + package[0] + " - " + api.getStatusFromCode(package[1]) + \
                             " - " + api.TrackerApi.getLastMessage(package[0], package[3])
-            bot.send_message(message.chat.id, "Your Packages:" + messages)
+            bot.send_message(message.chat.id, u"你的快递:" + messages)
 
         @staticmethod
         @bot.message_handler(commands=['remove'])
         def remove_package(message):
             if len(str(message.text).split(" ")[1:]) == 0:
-                bot.send_message(message.chat.id, "Error: Please input a PackageId")
+                bot.send_message(message.chat.id, u"错误: 请输入单号")
                 return
 
             packageID = str(escape(str(message.text).split(" ")[1]))
 
             DATABASE.removePackage(message.chat.id, packageID)
 
-            logger.info("Removed a package: " + packageID)
+            logger.info(u"删除了快递: " + packageID)
 
-            bot.send_message(message.chat.id, "Removed package: " + packageID)
+            bot.send_message(message.chat.id, u"删除了快递: " + packageID)
 
         @staticmethod
         @bot.message_handler(commands=['fetch'])
         def fetch_package(message):
             if len(str(message.text).split(" ")[1:]) == 0:
-                bot.send_message(message.chat.id, "Error: Please input a PackageId")
+                bot.send_message(message.chat.id, u"错误: 请输入单号")
                 return
 
             packageID = str(escape(str(message.text).split(" ")[1]))
 
-            logger.info("Fetched a package: " + packageID)
+            logger.info(u"查找快递: " + packageID)
             info = api.TrackerApi.getPackageInformation(packageID)
-            messages = "\nPackage Status: " + api.getStatusFromCode(info["status"])
+            messages = u"\n包裹状态: " + api.getStatusFromCode(info["status"])
             if info["data"]:
                 for item in info["data"]:
                     messages += ("\n" + item["data"] + " - " + item["time"])
             else:
-                bot.send_message(message.chat.id, "Error: Package not found")
+                bot.send_message(message.chat.id, u"错误: 包裹未找到")
                 return
-            bot.send_message(message.chat.id, "Fetched Package: " + packageID + messages)
-            
+            bot.send_message(message.chat.id, u"查找快递: " + packageID + messages)
+
     return PackagerTracker

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import sqlite3
 
 DB_TABEL = "packages"
@@ -76,7 +77,8 @@ def getDb(path):
             if not TrackerDb.checkDump(user, num, pType):
                 raise ValueError("Dump")
             cs.execute(
-                "INSERT INTO " + DB_TABEL + " values (?,?,?,?,?,?)", (num, status, user, pType, lastDate, packageName)
+                "INSERT INTO " + DB_TABEL + " values (?,?,?,?,?,?)", (num, status, user, pType, lastDate, unicode(
+                    packageName))
             )
 
         @staticmethod
