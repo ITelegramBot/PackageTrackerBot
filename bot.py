@@ -32,6 +32,7 @@ def getTracker(bot, logger):
         @staticmethod
         @bot.message_handler(commands=['new'])
         def create_query(message):
+            message.text = " ".join(filter(lambda x: x != "", str(message.text).split(' ')))
             if len(str(str(message.text).encode("utf-8")).split(" ")[1:]) == 0:
                 bot.send_message(message.chat.id, u"错误: 请输入单号")
                 return
@@ -83,6 +84,7 @@ def getTracker(bot, logger):
         @staticmethod
         @bot.message_handler(commands=['list'])
         def list_package(message):
+            message.text = " ".join(filter(lambda x: x != "", str(message.text).split(' ')))
             messages = ""
             for package in DATABASE.getUserAll(message.chat.id):
                 messages += "\n" + package[5] + " - " + package[0] + " - " + api.getStatusFromCode(package[1]) + \
@@ -92,6 +94,7 @@ def getTracker(bot, logger):
         @staticmethod
         @bot.message_handler(commands=['remove'])
         def remove_package(message):
+            message.text = " ".join(filter(lambda x: x != "", str(message.text).split(' ')))
             if len(str(message.text).split(" ")[1:]) == 0:
                 bot.send_message(message.chat.id, u"错误: 请输入单号")
                 return
@@ -107,6 +110,7 @@ def getTracker(bot, logger):
         @staticmethod
         @bot.message_handler(commands=['fetch'])
         def fetch_package(message):
+            message.text = " ".join(filter(lambda x: x != "", str(message.text).split(' ')))
             if len(str(message.text).split(" ")[1:]) == 0:
                 bot.send_message(message.chat.id, u"错误: 请输入单号")
                 return
