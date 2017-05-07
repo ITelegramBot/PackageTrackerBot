@@ -16,4 +16,4 @@ timer.getTimer(tgBot, logging)("Timer").start()
 
 logging.info("Start polling")
 
-tgBot.polling(none_stop=True)
+tgBot.polling(none_stop=True, interval=1)
