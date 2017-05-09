@@ -1,4 +1,4 @@
-FROM hyalx/centos:centos6
+FROM hyalx/centos
 MAINTAINER Indexyz <r18@indexes.nu>
 
 RUN mkdir /usr/app
@@ -6,8 +6,10 @@ RUN mkdir /usr/app
 COPY . /usr/app
 
 RUN yum install epel-release -y && \
-    yum install python-setuptools -y && \
+    yum install python-setuptools python-devel openssl-devel -y && \
     easy_install pip && \
+    pip uninstall requests && \
+    pip install requests[security] && \
     pip install -r /usr/app/requirements.txt && \
     mkdir db 
 
