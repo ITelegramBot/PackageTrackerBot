@@ -18,7 +18,7 @@ logging.info("Start polling")
 def _pull():
     try:
         tgBot.polling(none_stop=True, interval=1)
-    except Expection as e:
+    except Exception as e:
         _pull()
 
 _pull()
