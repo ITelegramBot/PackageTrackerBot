@@ -15,5 +15,10 @@ bot.getTracker(tgBot, logging)()
 timer.getTimer(tgBot, logging)("Timer").start()
 
 logging.info("Start polling")
+def _pull():
+    try:
+        tgBot.polling(none_stop=True, interval=1)
+    except Expection as e:
+        _pull()
 
-tgBot.polling(none_stop=True, interval=1)
+_pull()
