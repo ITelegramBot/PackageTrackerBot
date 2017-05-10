@@ -8,7 +8,6 @@ COPY . /usr/app
 RUN yum install epel-release -y && \
     yum install python-setuptools python-devel openssl-devel -y && \
     easy_install pip && \
-    pip uninstall requests -y && \
     pip install requests[security] && \
     pip install -r /usr/app/requirements.txt && \
     mkdir db 
