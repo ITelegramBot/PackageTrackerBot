@@ -6,7 +6,7 @@ RUN mkdir /usr/app
 COPY . /usr/app
 
 RUN yum install epel-release -y && \
-    yum install python-setuptools python-devel openssl-devel -y && \
+    yum install python-setuptools python-devel openssl-devel gcc gcc-c++ -y && \
     easy_install pip && \
     pip install requests[security] && \
     pip install -r /usr/app/requirements.txt && \
