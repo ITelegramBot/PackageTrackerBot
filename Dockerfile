@@ -1,13 +1,23 @@
-FROM python:2.7.13
-MAINTAINER Indexyz <r18@indexes.nu>
+FROM python:2.7.14-alpine3.6
+MAINTAINER FAN VINGA<fanalcest@gmail.com> Indexyz <r18@indexes.nu>
 
-RUN mkdir /usr/app
+ADD . /usr/app
 
-COPY . /usr/app
-
-RUN pip install requests[security] && \
-    pip install -r /usr/app/requirements.txt && \
-    mkdir db 
+RUN  apk update && apk add --virtual .build-deps \
+                        git \
+                        tar \          
+                        autoconf \
+                        automake \
+                        make \
+                        build-base \
+                        linux-headers && \
+     apk add --virtual runtime-tools \                       
+                        openssl-dev \
+                        libffi-dev && \                                  
+     mkdir -p /usr/app/db && \
+     pip install requests[security] && \
+     pip install -r /usr/app/requirements.txt && \
+     apk del .build-deps && rm -rf /var/cache/apk/*
 
 WORKDIR "/usr/app/db"
 ENTRYPOINT ["python"]
